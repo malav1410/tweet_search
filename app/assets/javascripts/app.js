@@ -5,6 +5,7 @@ app.controller('AppCtrl', ['$scope', '$mdBottomSheet','$mdSidenav', '$mdDialog',
   $scope.init = function (articles) {
     $scope.articles = articles;    
     $scope.isSearching = true;
+    $scope.notSearching = true;
   };
 
   $scope.toggleSidenav = function(menuId) {
@@ -16,22 +17,31 @@ app.controller('AppCtrl', ['$scope', '$mdBottomSheet','$mdSidenav', '$mdDialog',
   };
 
   $scope.callSearch = function(query) { 
-    $scope.isSearching = true;   
-    $http.get('/search?query=' + query).then(function(res){            
-      $scope.results = res.data.search
-      // Get the element that should hold the slider
-      element = angular.element(document.getElementById('articles-slider'));
+    $scope.isSearching = true;
+    $scope.notSearching = false;
+    if (query.length > 0) {
+      $http.get('/search?query=' + query).then(function(res){            
+        $scope.results = res.data.search        
+        $scope.isSearching = false;
+        // Get the element that should hold the slider
+        $scope.element = angular.element(document.getElementById('articles-slider'));
 
-      // NOTE: When fetching remote data, we initialize the Flickity
-      // instance inside of a $timeout. This ensures that the slides
-      // have already been assigned to scope before the slider is
-      // initialized.
-      $timeout(() => {        
+        // NOTE: When fetching remote data, we initialize the Flickity
+        // instance inside of a $timeout. This ensures that the slides
+        // have already been assigned to scope before the slider is
+        // initialized.
+                
         // Initialize our Flickity instance
-        FlickityService.create(element[0], element[0].id);        
+        FlickityService.create($scope.element[0], $scope.element[0].id);                
+                
       });
-      $scope.isSearching = false;
-    });
+    } else {
+      $scope.isSearching = true;
+      $scope.notSearching = true;
+    };
+      
+
+    
   };
 
   $scope.imagePath = 'img/washedout.png';

@@ -70,7 +70,7 @@
           <ng-switch on="data.selectedIndex" class="tabpanel-container">            
             <div>
               <!-- Define the gallery: -->
-              <div bc-flickity="{{ flickityOptions }}" ng-if="isSearching">
+              <div bc-flickity="{{ flickityOptions }}" ng-if="notSearching">
                 <div class="gallery-cell" ng-repeat="item in articles | limitTo: 10">
                   <md-card flex-gt-sm="20" flex-gt-md="20" style="margin: 0px">
                     <img ng-src="{{item.url_to_image}}" class="md-card-image" alt="Washed Out">
