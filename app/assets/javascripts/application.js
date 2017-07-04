@@ -12,5 +12,8 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require angular.min
+//= require flickity
+//= require angular-flickity
 //= require turbolinks
 //= require_tree .

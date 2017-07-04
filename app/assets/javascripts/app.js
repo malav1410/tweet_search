@@ -1,7 +1,10 @@
-var app = angular.module('StarterApp', ['ngMaterial', 'ngMdIcons']);
+var app = angular.module('StarterApp', ['ngMaterial', 'ngMdIcons', 'bc.Flickity']);
 
-app.controller('AppCtrl', ['$scope', '$mdBottomSheet','$mdSidenav', '$mdDialog', '$http', '$window', function($scope, $mdBottomSheet, $mdSidenav, $mdDialog, $http, $window){
-  $scope.init = function () {   
+app.controller('AppCtrl', ['$scope', '$mdBottomSheet','$mdSidenav', '$mdDialog', '$http', '$window', '$document', 'FlickityService', '$timeout', function($scope, $mdBottomSheet, $mdSidenav, $mdDialog, $http, $window, $document, FlickityService, $timeout){
+  
+  $scope.init = function (articles) {
+    $scope.articles = articles;    
+    $scope.isSearching = true;
   };
 
   $scope.toggleSidenav = function(menuId) {
@@ -12,9 +15,33 @@ app.controller('AppCtrl', ['$scope', '$mdBottomSheet','$mdSidenav', '$mdDialog',
     $window.open(link, '_blank');
   };
 
+  $scope.callSearch = function(query) { 
+    $scope.isSearching = true;   
+    $http.get('/search?query=' + query).then(function(res){            
+      $scope.results = res.data.search
+      // Get the element that should hold the slider
+      element = angular.element(document.getElementById('articles-slider'));
+
+      // NOTE: When fetching remote data, we initialize the Flickity
+      // instance inside of a $timeout. This ensures that the slides
+      // have already been assigned to scope before the slider is
+      // initialized.
+      $timeout(() => {        
+        // Initialize our Flickity instance
+        FlickityService.create(element[0], element[0].id);        
+      });
+      $scope.isSearching = false;
+    });
+  };
+
   $scope.imagePath = 'img/washedout.png';
   
-  
+  $scope.flickityOptions = {
+    cellSelector: '.gallery-cell',
+    initialIndex: 1,
+    prevNextButtons: true,
+  };
+
   $scope.menu = [
     {
       link : '',
@@ -109,8 +136,7 @@ app.controller('AppCtrl', ['$scope', '$mdBottomSheet','$mdSidenav', '$mdDialog',
         link: "https://thenextweb.com/apple/2017/07/01/is-this-the-iphone-8-sure-looks-like-it/"
       },
     ];
-  console.log($scope.myData);
-  console.log($scope.activity);
+  
   $scope.alert = '';
   $scope.showListBottomSheet = function($event) {
     $scope.alert = '';
